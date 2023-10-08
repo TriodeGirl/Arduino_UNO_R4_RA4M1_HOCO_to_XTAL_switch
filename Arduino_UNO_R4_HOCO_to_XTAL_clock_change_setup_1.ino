@@ -164,6 +164,14 @@ void sys_clock_pll_setup(void)
   *SYSTEM_PLLCCR2 |= 0x40;            // Setup PLLCCR2_PLODIV_1_0 PLL Output Frequency Division to /2
   *SYSTEM_PLLCR    = 0x00;            // Enable PLL
   delayMicroseconds(1000);            // wait for PLL to stabilise
-  *SYSTEM_SCKSCR   = 0x05;            // Select PLL as the system clock 
+  if(*SYSTEM_OSCSF == 0b0101001)      // Check for stabile XTAL, before allowing switch
+    {
+    *SYSTEM_SCKSCR   = 0x05;          // Select PLL as the system clock
+    Serial.println("System clock changed to XTAL with PLL"); 
+    }
+  else
+    {
+    Serial.println("XTAL or PLL not stable, remain on HOCO clock"); 
+    }
   *SYSTEM_PRCR     = 0xA500;          // Disable writing to the clock registers
   }
